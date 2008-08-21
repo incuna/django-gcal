@@ -4,10 +4,10 @@ gcalendar.adapter
 
 """
 
+from datetime import datetime
+
 from atom import Content, Title
 from gdata.calendar import When, Where, Who
-
-from datetime import datetime
 from django.utils.tzinfo import FixedOffset, LocalTimezone
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'

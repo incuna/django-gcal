@@ -5,7 +5,6 @@ gcalendar.observer
 """
 
 from django.db.models import signals
-
 from gdata.calendar import CalendarEventEntry
 from gdata.calendar.service import CalendarService
 
@@ -77,7 +76,7 @@ class CalendarObserver(object):
         event_id = CalendarEvent.objects.get_event_id(instance, self.feed)
         try:
             event = service.GetCalendarEventEntry(event_id)
-        except:
+        except Exception:
             event = None
         return event
     
