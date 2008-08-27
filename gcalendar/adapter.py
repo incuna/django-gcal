@@ -81,27 +81,27 @@ class CalendarAdapter(object):
     
     """
     
-    def __init__(self, instance):
+    def __init__(self):
         """
         Instantiates a new instance of CalendarAdapter.
         """
-        self.instance = instance
+        pass
     
-    def can_save(self):
+    def can_save(self, instance):
         """
         Should return a boolean indicating whether the object can be stored or
         updated in Google Calendar.
         """
         return True
     
-    def can_delete(self):
+    def can_delete(self, instance):
         """
         Should return a boolean indicating whether the object can be deleted
         from Google Calendar.
         """
         return True
     
-    def get_event_data(self):
+    def get_event_data(self, instance):
         """
         This method should be implemented by users, and must return an object
         conforming to the CalendarEventData protocol.

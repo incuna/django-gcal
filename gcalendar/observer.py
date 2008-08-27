@@ -85,11 +85,11 @@ class CalendarObserver(object):
         Update or create an entry in Google Calendar for the given instance
         of the sender model type.
         """
-        adapter = self.adapters[sender](instance)
-        if adapter.can_save():
+        adapter = self.adapters[sender]
+        if adapter.can_save(instance):
             service = self.get_service()
             event = self.get_event(service, instance) or CalendarEventEntry()
-            adapter.get_event_data().populate_event(event)
+            adapter.get_event_data(instance).populate_event(event)
             if event.GetEditLink():
                 service.UpdateEvent(event.GetEditLink().href, event)
             else:
@@ -102,8 +102,8 @@ class CalendarObserver(object):
         Delete the entry in Google Calendar corresponding to the given instance
         of the sender model type.
         """
-        adapter = self.adapters[sender](instance)
-        if adapter.can_delete():
+        adapter = self.adapters[sender]
+        if adapter.can_delete(instance):
             service = self.get_service()
             event = self.get_event(service, instance)
             if event:
