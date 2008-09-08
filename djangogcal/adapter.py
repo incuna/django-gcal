@@ -56,25 +56,20 @@ class RawCalendarEventData(object):
     need access to advanced fields.
     """
     
-    def __init__(self, when, title=None, where=None, who=None, content=None):
+    def __init__(self, when, **kwargs):
         """
         Instantiates a new instance of RawCalendarEventData.
         """
         self.when = when
-        self.title = title
-        self.where = where or []
-        self.who = who or []
-        self.content = content
+        self.kwargs = kwargs
     
     def populate_event(self, event):
         """
         Populates the parameters of a Google Calendar event object.
         """
         event.when = self.when
-        event.title = self.title
-        event.where = self.where
-        event.who = self.who
-        event.content = self.content
+        for key in self.kwargs:
+            setattr(event, key, self.kwargs[key])
 
 class CalendarAdapter(object):
     """
