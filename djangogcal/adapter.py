@@ -1,5 +1,5 @@
 """
-gcalendar.adapter
+djangogcal.adapter
 
 
 """

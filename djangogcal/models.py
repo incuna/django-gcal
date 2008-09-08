@@ -1,5 +1,5 @@
 """
-gcalendar.models
+djangogcal.models
 
 
 """

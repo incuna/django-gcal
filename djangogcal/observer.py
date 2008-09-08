@@ -1,5 +1,5 @@
 """
-gcalendar.observer
+djangogcal.observer
 
 
 """
