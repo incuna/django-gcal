@@ -43,9 +43,10 @@ class CalendarObserver(object):
         model.
         """
         def on_related_update(**kwargs):
-            self.update(model, selector(kwargs['sender']))
-        signals.post_save.connect(on_related_update, sender=related)
-        signals.post_delete.connect(on_related_update, sender=related)
+            self.update(model, selector(kwargs['instance']))
+        signals.post_save.connect(on_related_update, sender=related, weak=False)
+        signals.post_delete.connect(on_related_update, sender=related,
+                                    weak=False)
     
     def on_update(self, **kwargs):
         """
