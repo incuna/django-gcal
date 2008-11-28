@@ -47,7 +47,7 @@ class CalendarEventData(object):
         )]
         event.title = Title(text=self.title)
         event.where = [Where(value_string=x) for x in self.where]
-        event.who = [Who(value_string=x) for x in self.who]
+        event.who = [Who(email=x) for x in self.who]
         event.content = Content(text=self.content)
 
 class RawCalendarEventData(object):
