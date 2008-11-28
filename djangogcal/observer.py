@@ -5,7 +5,7 @@ djangogcal.observer
 """
 
 from django.db.models import signals
-from gdata.calendar import CalendarEventEntry
+from gdata.calendar import CalendarEventEntry, SendEventNotifications
 from gdata.calendar.service import CalendarService
 
 from models import CalendarEvent
@@ -91,6 +91,9 @@ class CalendarObserver(object):
             service = self.get_service()
             event = self.get_event(service, instance) or CalendarEventEntry()
             adapter.get_event_data(instance).populate_event(event)
+            if adapter.can_notify(instance):
+                event.send_event_notifications = SendEventNotifications(
+                    value='true')
             if event.GetEditLink():
                 service.UpdateEvent(event.GetEditLink().href, event)
             else:
@@ -108,5 +111,8 @@ class CalendarObserver(object):
             service = self.get_service()
             event = self.get_event(service, instance)
             if event:
+                if adapter.can_notify(instance):
+                    event.send_event_notifications = SendEventNotifications(
+                        value='true')
                 service.DeleteEvent(event.GetEditLink().href)
         CalendarEvent.objects.delete_event_id(instance, self.feed)

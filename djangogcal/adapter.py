@@ -95,6 +95,13 @@ class CalendarAdapter(object):
         from Google Calendar.
         """
         return True
+
+    def can_notify(self, instance):
+        """
+        Should return a boolean indicating whether Google Calendar should send
+        event change notifications.
+        """
+        return False
     
     def get_event_data(self, instance):
         """
