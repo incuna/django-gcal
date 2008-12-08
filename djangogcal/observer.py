@@ -17,14 +17,15 @@ class CalendarObserver(object):
     
     DEFAULT_FEED = '/calendar/feeds/default/private/full'
     
-    def __init__(self, email, password, feed=DEFAULT_FEED):
+    def __init__(self, email, password, feed=DEFAULT_FEED, service=None):
         """
-        Initialise an instance of the CalendarObserver class.
+        Initialize an instance of the CalendarObserver class.
         """
         self.adapters = {}
         self.email = email
         self.password = password
         self.feed = feed
+        self.service = service
     
     def observe(self, model, adapter):
         """
@@ -62,12 +63,13 @@ class CalendarObserver(object):
     
     def get_service(self):
         """
-        Creates a Google Calendar service object and performs programmatic
-        authentication.
+        Get an authenticated gdata.calendar.service.CalendarService instance.
         """
-        service = CalendarService(email=self.email, password=self.password)
-        service.ProgrammaticLogin()
-        return service
+        if self.service is None:
+            self.service = CalendarService(email=self.email,
+                                           password=self.password)
+            self.service.ProgrammaticLogin()
+        return self.service
     
     def get_event(self, service, instance):
         """
