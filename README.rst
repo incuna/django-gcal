@@ -2,6 +2,8 @@
 djangogcal
 ==========
 
+A Django application allowing developers to synchronise instances of their models with Google Calendar. Using Django's signals mechanism and generic relations, no changes to the model being synchronised are required, and synchronisation occurs without user intervention over the models lifecycle.
+
 Usage
 =====
 
