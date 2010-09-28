@@ -1,9 +1,10 @@
-=========
+==========
 djangogcal
 ==========
 
 Usage
-============
+=====
+
 In a typical scenario, the following steps are required to use django-gcal:
 
 Add djangogcal to the list of installed applications in your settings.py.
