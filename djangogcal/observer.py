@@ -71,12 +71,14 @@ class CalendarObserver(object):
             self.service.ProgrammaticLogin()
         return self.service
     
-    def get_event(self, service, instance):
+    def get_event(self, service, instance, feed=None):
         """
         Retrieves the specified event from Google Calendar, or returns None
         if the retrieval fails.
         """
-        event_id = CalendarEvent.objects.get_event_id(instance, self.feed)
+        if feed is None:
+            feed = self.feed
+        event_id = CalendarEvent.objects.get_event_id(instance, feed)
         try:
             event = service.GetCalendarEventEntry(event_id)
         except Exception:
@@ -91,7 +93,8 @@ class CalendarObserver(object):
         adapter = self.adapters[sender]
         if adapter.can_save(instance):
             service = self.get_service()
-            event = self.get_event(service, instance) or CalendarEventEntry()
+            feed = adapter.get_feed_url(instance) or self.feed
+            event = self.get_event(service, instance, feed) or CalendarEventEntry()
             adapter.get_event_data(instance).populate_event(event)
             if adapter.can_notify(instance):
                 event.send_event_notifications = SendEventNotifications(
@@ -99,8 +102,8 @@ class CalendarObserver(object):
             if event.GetEditLink():
                 service.UpdateEvent(event.GetEditLink().href, event)
             else:
-                new_event = service.InsertEvent(event, self.feed)
-                CalendarEvent.objects.set_event_id(instance, self.feed,
+                new_event = service.InsertEvent(event, feed)
+                CalendarEvent.objects.set_event_id(instance, feed,
                                                    new_event.id.text)
     
     def delete(self, sender, instance):
@@ -109,12 +112,13 @@ class CalendarObserver(object):
         of the sender model type.
         """
         adapter = self.adapters[sender]
+        feed = adapter.get_feed_url(instance) or self.feed
         if adapter.can_delete(instance):
             service = self.get_service()
-            event = self.get_event(service, instance)
+            event = self.get_event(service, instance, feed)
             if event:
                 if adapter.can_notify(instance):
                     event.send_event_notifications = SendEventNotifications(
                         value='true')
                 service.DeleteEvent(event.GetEditLink().href)
-        CalendarEvent.objects.delete_event_id(instance, self.feed)
+        CalendarEvent.objects.delete_event_id(instance, feed)

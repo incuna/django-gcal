@@ -109,3 +109,11 @@ class CalendarAdapter(object):
         conforming to the CalendarEventData protocol.
         """
         raise NotImplementedError()
+
+    def get_feed_url(self, instance):
+        """
+        This method may be implemented by users, and should return a string to 
+        be used to specify the feed for the event.
+        """
+        raise None
+    
