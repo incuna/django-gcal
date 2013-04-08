@@ -2,7 +2,7 @@
 djangogcal
 ==========
 
-Forked from [django-gcal](https://code.google.com/p/django-gcal/) on Google Code, by metzen and emperorofcheese.
+Forked from https://code.google.com/p/django-gcal/ on Google Code, by metzen and emperorofcheese.
 
 Released under an MIT licence.
 
