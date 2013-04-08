@@ -6,8 +6,8 @@ djangogcal.adapter
 
 from datetime import datetime
 
-from atom import Content, Title
-from gdata.calendar import When, Where, Who
+from atom.data import Content, Title
+from gdata.calendar.data import When, CalendarWhere, EventWho
 from django.utils.tzinfo import FixedOffset, LocalTimezone
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
@@ -42,12 +42,12 @@ class CalendarEventData(object):
         Populates the parameters of a Google Calendar event object.
         """
         event.when = [When(
-            start_time=format_datetime(self.start),
-            end_time=format_datetime(self.end)
+            start=format_datetime(self.start),
+            end=format_datetime(self.end)
         )]
         event.title = Title(text=self.title)
-        event.where = [Where(value_string=x) for x in self.where]
-        event.who = [Who(email=x) for x in self.who]
+        event.where = [CalendarWhere(value_string=x) for x in self.where]
+        event.who = [EventWho(email=x) for x in self.who]
         event.content = Content(text=self.content)
 
 class RawCalendarEventData(object):
