@@ -2,6 +2,13 @@
 djangogcal
 ==========
 
+Forked from [django-gcal](https://code.google.com/p/django-gcal/) on Google Code, by metzen and emperorofcheese.
+
+Released under an MIT licence.
+
+About
+=====
+
 A Django application allowing developers to synchronise instances of their models with Google Calendar. Using Django's signals mechanism and generic relations, no changes to the model being synchronised are required, and synchronisation occurs without user intervention over the models lifecycle.
 
 Usage
@@ -9,11 +16,11 @@ Usage
 
 In a typical scenario, the following steps are required to use django-gcal:
 
-Add djangogcal to the list of installed applications in your settings.py.
-Define a djangogcal.adapter.CalendarAdapter for each model you want synchronised.
-Instantiate a djangogcal.observer.CalendarObserver for each Google Calendar feed.
-Call the CalendarObserver.observe(model, adapter) method to link models with the Google Calendar feed.
-See GettingStarted for more information, and RelatedModels for information about sending updates when related objects are changed.
+- Add djangogcal to the list of installed applications in your settings.py.
+- Define a djangogcal.adapter.CalendarAdapter for each model you want synchronised.
+- Instantiate a djangogcal.observer.CalendarObserver for each Google Calendar feed.
+- Call the CalendarObserver.observe(model, adapter) method to link models with the Google Calendar feed.
+- See GettingStarted for more information, and RelatedModels for information about sending updates when related objects are changed.
 
 Example
 =======
