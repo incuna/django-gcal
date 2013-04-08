@@ -34,8 +34,10 @@ class CalendarObserver(object):
         adapter to transform data.
         """
         self.adapters[model] = adapter
-        signals.post_save.connect(self.on_update, sender=model, dispatch_uid="djangogcal post-save signal")
-        signals.post_delete.connect(self.on_delete, sender=model, dispatch_uid="djangogcal post-delete signal")
+        signals.post_save.connect(self.on_update, sender=model,
+                                  dispatch_uid="djangogcal post-save signal")
+        signals.post_delete.connect(self.on_delete, sender=model,
+                                    dispatch_uid="djangogcal post-delete signal")
     
     def observe_related(self, model, related, selector):
         """
