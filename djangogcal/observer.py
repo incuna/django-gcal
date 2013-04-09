@@ -5,8 +5,9 @@ djangogcal.observer
 """
 
 from django.db.models import signals
-from gdata.calendar import CalendarEventEntry, SendEventNotifications
-from gdata.calendar.service import CalendarService
+from gdata.calendar import SendEventNotifications
+from gdata.calendar.data import CalendarEventEntry
+from gdata.calendar.client import CalendarClient
 
 from models import CalendarEvent
 
@@ -17,7 +18,7 @@ class CalendarObserver(object):
     
     DEFAULT_FEED = '/calendar/feeds/default/private/full'
     
-    def __init__(self, email, password, feed=DEFAULT_FEED, service=None):
+    def __init__(self, email, password, feed=DEFAULT_FEED, client=None):
         """
         Initialize an instance of the CalendarObserver class.
         """
@@ -25,7 +26,7 @@ class CalendarObserver(object):
         self.email = email
         self.password = password
         self.feed = feed
-        self.service = service
+        self.client = client
     
     def observe(self, model, adapter):
         """
@@ -33,8 +34,10 @@ class CalendarObserver(object):
         adapter to transform data.
         """
         self.adapters[model] = adapter
-        signals.post_save.connect(self.on_update, sender=model)
-        signals.post_delete.connect(self.on_delete, sender=model)
+        signals.post_save.connect(self.on_update, sender=model,
+                                  dispatch_uid="djangogcal post-save signal")
+        signals.post_delete.connect(self.on_delete, sender=model,
+                                    dispatch_uid="djangogcal post-delete signal")
     
     def observe_related(self, model, related, selector):
         """
@@ -61,17 +64,16 @@ class CalendarObserver(object):
         """
         self.delete(kwargs['sender'], kwargs['instance'])
     
-    def get_service(self):
+    def get_client(self):
         """
-        Get an authenticated gdata.calendar.service.CalendarService instance.
+        Get an authenticated gdata.calendar.client.CalendarClient instance.
         """
-        if self.service is None:
-            self.service = CalendarService(email=self.email,
-                                           password=self.password)
-            self.service.ProgrammaticLogin()
-        return self.service
+        if self.client is None:
+            self.client = CalendarClient(source='django-gcal')
+            self.client.ClientLogin(self.email, self.password, self.client.source)
+        return self.client
     
-    def get_event(self, service, instance, feed=None):
+    def get_event(self, client, instance, feed=None):
         """
         Retrieves the specified event from Google Calendar, or returns None
         if the retrieval fails.
@@ -80,7 +82,7 @@ class CalendarObserver(object):
             feed = self.feed
         event_id = CalendarEvent.objects.get_event_id(instance, feed)
         try:
-            event = service.GetCalendarEventEntry(event_id)
+            event = client.GetCalendarEntry(event_id)
         except Exception:
             event = None
         return event
@@ -92,19 +94,19 @@ class CalendarObserver(object):
         """
         adapter = self.adapters[sender]
         if adapter.can_save(instance):
-            service = self.get_service()
+            client = self.get_client()
             feed = adapter.get_feed_url(instance) or self.feed
-            event = self.get_event(service, instance, feed) or CalendarEventEntry()
+            event = self.get_event(client, instance, feed) or CalendarEventEntry()
             adapter.get_event_data(instance).populate_event(event)
             if adapter.can_notify(instance):
                 event.send_event_notifications = SendEventNotifications(
                     value='true')
             if event.GetEditLink():
-                service.UpdateEvent(event.GetEditLink().href, event)
+                client.Update(event)
             else:
-                new_event = service.InsertEvent(event, feed)
+                new_event = client.InsertEvent(event, insert_uri=feed)
                 CalendarEvent.objects.set_event_id(instance, feed,
-                                                   new_event.id.text)
+                                                   new_event.get_edit_link().href)
     
     def delete(self, sender, instance):
         """
@@ -114,11 +116,11 @@ class CalendarObserver(object):
         adapter = self.adapters[sender]
         feed = adapter.get_feed_url(instance) or self.feed
         if adapter.can_delete(instance):
-            service = self.get_service()
-            event = self.get_event(service, instance, feed)
+            client = self.get_client()
+            event = self.get_event(client, instance, feed)
             if event:
                 if adapter.can_notify(instance):
                     event.send_event_notifications = SendEventNotifications(
                         value='true')
-                service.DeleteEvent(event.GetEditLink().href)
+                client.Delete(event)
         CalendarEvent.objects.delete_event_id(instance, feed)
