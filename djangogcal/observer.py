@@ -82,7 +82,7 @@ class CalendarObserver(object):
             feed = self.feed
         event_id = CalendarEvent.objects.get_event_id(instance, feed)
         try:
-            event = client.GetCalendarEntry(event_id)
+            event = client.GetEventEntry(event_id)
         except Exception:
             event = None
         return event
