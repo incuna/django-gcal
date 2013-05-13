@@ -1,0 +1,10 @@
+Changelog for django-gcal
+=========================
+
+v 0.2.1
+-------
+* Fixed failure to update event time when updating existing event.
+
+v 0.2
+-----
+* Refactor to conform to Google Calendar API v2
